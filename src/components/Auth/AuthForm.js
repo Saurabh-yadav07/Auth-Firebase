@@ -1,7 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import classes from './AuthForm.module.css';
+import AuthContext from '../../store/auth-context';
 
 const AuthForm = () => {
+  const authCtx = useContext(AuthContext);
   const API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
 
   const [isLogin, setIsLogin] = useState(true);
@@ -48,8 +50,10 @@ const AuthForm = () => {
         throw new Error(data.error.message || 'Authentication failed!');
       }
 
-      console.log('Auth success:', data);
-      // 👉 store token, redirect, update auth context
+      // 🔐 SAVE TOKEN IN CONTEXT
+      authCtx.login(data.idToken);
+
+      console.log('Logged in with token:', data.idToken);
 
     } catch (err) {
       setError(err.message);
@@ -65,22 +69,12 @@ const AuthForm = () => {
       <form onSubmit={submitHandler}>
         <div className={classes.control}>
           <label htmlFor="email">Your Email</label>
-          <input
-            type="email"
-            id="email"
-            required
-            ref={emailInputRef}
-          />
+          <input type="email" id="email" required ref={emailInputRef} />
         </div>
 
         <div className={classes.control}>
           <label htmlFor="password">Your Password</label>
-          <input
-            type="password"
-            id="password"
-            required
-            ref={passwordInputRef}
-          />
+          <input type="password" id="password" required ref={passwordInputRef} />
         </div>
 
         {error && <p className={classes.error}>{error}</p>}
@@ -95,9 +89,7 @@ const AuthForm = () => {
             className={classes.toggle}
             onClick={switchAuthModeHandler}
           >
-            {isLogin
-              ? 'Create new account'
-              : 'Login with existing account'}
+            {isLogin ? 'Create new account' : 'Login with existing account'}
           </button>
         </div>
       </form>
