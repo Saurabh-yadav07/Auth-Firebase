@@ -7,6 +7,9 @@
 body {
   font-family: 'Open Sans', 'Lato', sans-serif;
   margin: 0;
+  background-color: #0a0f0c; 
+  color: #e6fff3; 
+  min-height: 100vh;
 }
 
 h1,
@@ -16,4 +19,28 @@ h4,
 h5,
 h6 {
   font-family: 'Lato', sans-serif;
+  color: #00ff88; 
+  letter-spacing: 0.5px;
+}
+
+a,
+button,
+input {
+  transition: all 0.3s ease;
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f1a14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00ff88;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00cc6a;
 }

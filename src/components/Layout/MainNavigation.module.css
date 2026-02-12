@@ -1,19 +1,21 @@
 .header {
   width: 100%;
   height: 5rem;
-  background-color: #38015c;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  background-color: #0f1a14;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 10%;
+  border-bottom: 1px solid #1f3d2b;
 }
 
 .logo {
   font-family: 'Lato', sans-serif;
   font-size: 2rem;
-  color: white;
+  color: #00ff88; 
   margin: 0;
+  letter-spacing: 1px;
 }
 
 .header ul {
@@ -30,26 +32,29 @@
 
 .header a {
   text-decoration: none;
-  color: white;
+  color: #e6fff3;
   font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.header a:hover {
+  color: #00ff88;
 }
 
 .header button {
   font: inherit;
   background-color: transparent;
-  border: 1px solid white;
-  color: white;
+  border: 1px solid #00ff88;
+  color: #00ff88;
   font-weight: bold;
   padding: 0.5rem 1.5rem;
   border-radius: 6px;
   cursor: pointer;
-}
-
-.header a:hover {
-  color: #c291e2;
+  transition: all 0.3s ease;
 }
 
 .header button:hover {
-  background-color: #c291e2;
-  color: #38015c;
+  background-color: #00ff88;
+  color: #0a0f0c;
+  box-shadow: 0 0 10px #00ff8855;
 }
