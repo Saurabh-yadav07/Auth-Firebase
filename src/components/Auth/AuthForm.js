@@ -50,7 +50,7 @@ const AuthForm = () => {
         throw new Error(data.error.message || 'Authentication failed!');
       }
 
-      // 🔐 SAVE TOKEN IN CONTEXT
+      //  SAVING TOKEN IN CONTEXT
       authCtx.login(data.idToken);
 
       console.log('Logged in with token:', data.idToken);
