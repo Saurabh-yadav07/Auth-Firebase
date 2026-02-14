@@ -1,88 +1,65 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext({
   token: '',
   isLoggedIn: false,
-  login: (token, expiresIn) => {},
+  login: (token) => {},
   logout: () => {},
 });
 
-let logoutTimer;
-
-const calculateRemainingTime = (expirationTime) => {
-  const currentTime = new Date().getTime();
-  const adjExpirationTime = new Date(expirationTime).getTime();
-  return adjExpirationTime - currentTime;
-};
+const SESSION_DURATION = 5 * 60 * 1000; 
 
 export const AuthContextProvider = (props) => {
-  const API_KEY = process.env.REACT_APP_FIREBASE_API_KEY;
-
   const storedToken = localStorage.getItem('token');
   const storedExpiration = localStorage.getItem('expirationTime');
 
-  const [token, setToken] = useState(storedToken);
+  let initialToken = null;
 
-  const logoutHandler = useCallback(() => {
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('expirationTime');
-    if (logoutTimer) clearTimeout(logoutTimer);
-  }, []);
+  // Checking if stored token is expired
+  if (storedToken && storedExpiration) {
+    const remainingTime =
+      new Date(storedExpiration).getTime() - new Date().getTime();
 
-  const loginHandler = (token, expiresIn) => {
+    if (remainingTime > 0) {
+      initialToken = storedToken;
+    } else {
+      localStorage.removeItem('token');
+      localStorage.removeItem('expirationTime');
+    }
+  }
+
+  const [token, setToken] = useState(initialToken);
+
+  const loginHandler = (token) => {
     setToken(token);
 
     const expirationTime = new Date(
-      new Date().getTime() + +expiresIn * 1000
+      new Date().getTime() + SESSION_DURATION
     ).toISOString();
 
     localStorage.setItem('token', token);
     localStorage.setItem('expirationTime', expirationTime);
-
-    const remainingTime = calculateRemainingTime(expirationTime);
-
-    logoutTimer = setTimeout(logoutHandler, remainingTime);
   };
 
-  //  FIREBASE VALIDATION
+  const logoutHandler = () => {
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('expirationTime');
+  };
+
   useEffect(() => {
-    const verifyToken = async () => {
-      if (!token) return;
-
-      try {
-        const response = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${API_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idToken: token }),
-          }
-        );
-
-        if (!response.ok) {
-          logoutHandler();
-        }
-      } catch {
-        logoutHandler();
-      }
-    };
-
-    verifyToken();
-  }, [token, logoutHandler, API_KEY]);
-
-  // Restore timer on refresh
-  useEffect(() => {
-    if (storedToken && storedExpiration) {
-      const remainingTime = calculateRemainingTime(storedExpiration);
+    if (token && storedExpiration) {
+      const remainingTime =
+        new Date(storedExpiration).getTime() - new Date().getTime();
 
       if (remainingTime <= 0) {
         logoutHandler();
       } else {
-        logoutTimer = setTimeout(logoutHandler, remainingTime);
+        const timer = setTimeout(logoutHandler, remainingTime);
+        return () => clearTimeout(timer);
       }
     }
-  }, [storedToken, storedExpiration, logoutHandler]);
+  }, [token, storedExpiration]);
 
   const contextValue = {
     token: token,

@@ -50,8 +50,8 @@ const AuthForm = () => {
         throw new Error(data.error.message || 'Authentication failed!');
       }
 
-      // Saving token + expiration time
-      authCtx.login(data.idToken, data.expiresIn);
+      // Saving token
+      authCtx.login(data.idToken);
 
     } catch (err) {
       setError(err.message);
